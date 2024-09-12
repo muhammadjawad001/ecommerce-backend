@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors')
 const dotenv = require('dotenv');
+const { specs, swaggerUi } = require('./docs/swagger');
 const sequelize = require('./config/db');
 
 dotenv.config();
@@ -10,6 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 const authRoutes = require('./routes/auth');
 
