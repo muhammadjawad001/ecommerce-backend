@@ -9,8 +9,13 @@ const options = {
       version: '1.0.0',
       description: 'A simple Express API with Swagger documentation',
     },
+    servers: [
+      {
+        url: 'http://localhost:5000'
+      }
+    ]
   },
-  apis: ['src/docs/*.yml','src/routes/*.js'], // Path to your API routes
+  apis: ['src/routes/*.js'], // Path to your API routes
 };
 
 const specs = swaggerJsdoc(options);
