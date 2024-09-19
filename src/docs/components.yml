@@ -1,7 +1,125 @@
-components:
-  schemas:
-    User:
-      type: Object
-      properties:
-        id:
-          type: string
+openapi: 3.0.0
+info:
+  title: E-commerce API 
+  description: API for managing users, authentication, and roles in an e-commerce platform.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+    description:
+
+paths:
+  /signup:
+    post:
+      summary: Registers a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  example: johndoe@example.com
+                password:
+                  type: string
+                  example: password123
+                role:
+                  type: string
+                  example: user
+      responses:
+        201:
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: 8ddbb7b4-0dca-4d10-abc7-19b646a4c098
+                      username:
+                        type: string
+                        example: johndoe
+                      email:
+                        type: string
+                        example: johndoe@example.com
+                      role:
+                        type: string
+                        example: user
+        400:
+          description: Invalid input data
+        500:
+          description: Error registering user
+
+  /login:
+    post:
+      summary: Logs a user in and returns a JWT token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        200:
+          description: Successful login, returns a JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successful
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        400:
+          description: Invalid credentials
+        404:
+          description: User not found
+  
+  /logout:
+    post:
+      summary: Logs a user out by invalidating their token or session
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []   # Assuming you're using a bearer token for auth
+      responses:
+        200:
+          description: User successfully logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User logged out successfully
+        401:
+          description: Unauthorized request, no token provided or invalid token
+        500:
+          description: Server error, unable to log out
