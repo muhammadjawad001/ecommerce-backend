@@ -3,22 +3,26 @@ const cors = require('cors')
 const dotenv = require('dotenv');
 const { specs, swaggerUi } = require('./docs/swagger');
 const sequelize = require('./config/db');
+const errorHandler = require('./middleware/errors');
 dotenv.config();
 const app = express();
 
 const authRoutes = require('./routes/auth.route');
+const productRoutes = require('./routes/product.route')
 
 
 app.use(express.json());
 app.use(cors());
 
-app.use((req, res, next)=> {console.log(req); next();})
+// app.use((req, res, next)=> {console.log(req); next();})
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {explorer: true}));
 
 // routes
 app.use('/api/auth', authRoutes);
+app.use('/api', productRoutes);
 
+app.use(errorHandler);
 // Connect to the database and start the server
 const startServer = async () => {
     try {

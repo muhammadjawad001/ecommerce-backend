@@ -1,21 +1,21 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UserService = require('./user.service');
+const ApiError = require('../utils/apiError');
 
 // Login
 const login = async (email, password) => {
   // Find the user by email
   const user = await UserService.findUserByEmail(email);
-
+  
   if (!user) {
-    throw new Error('User not found');
+    throw new ApiError(404, 'User not found');
   }
-
   // Check if password matches
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await user.validPassword(password);
 
   if (!isMatch) {
-    throw new Error('Invalid credentials');
+    throw new ApiError(400, 'Invalid credentials');
   }
 
   

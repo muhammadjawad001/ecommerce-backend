@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/auth.controller');
+const {protect} = require('../middleware/authentication')
 
 
 /**
@@ -21,20 +22,14 @@ const authController = require('../controllers/auth.controller');
  *        content:
  *          application/json:
  *            schema:
- *              type: object
- *              properties:
- *            username:
- *              type: strings
- *              example: johndoe
- *            email:
- *              type: string
- *              example: johndoe@example.com
- *            password:
- *              type: string
- *              example: password123
+ *              $ref: ' #/components/schemas/User'
  *      responses:
  *        201:
  *          description: User successfully registered
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/User'
  *        400:
  *          description: Invalid input data
  *        500:
@@ -56,21 +51,40 @@ router.post('/signup', authController.signup);
  *            schema:
  *              type: object
  *              properties:
- *            username:
- *              type: strings
- *              example: johndoe
- *            email:
- *              type: string
- *              example: johndoe@example.com
+ *                username:
+ *                  type: string
+ *                  example: johndoe
+ *                email:
+ *                  type: string
+ *                  example: johndoe@example.com
  *      responses:
  *        200:
- *          description: User successfully login
+ *          description: User successfully logged in
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  token:
+ *                    type: string
+ *                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                  user:
+ *                    type: object
+ *                    properties:
+ *                      id:
+ *                        type: string
+ *                        example: "605c72b8e43d9c00158d1b7a"
+ *                      username:
+ *                        type: string
+ *                        example: johndoe
+ *                      email:
+ *                        type: string
+ *                        example: johndoe@example.com
  *        400:
  *          description: Invalid credentials
  *        404:
  *          description: User not found
  */
-
 // Login route
 router.post('/login', authController.login);
 
@@ -101,5 +115,10 @@ router.post('/login', authController.login);
 
 //Logout
 router.post('/logout', authController.logout);
+
+
+router.get('/token-check', protect, (req, res) => {
+    res.status(204).send();  // No content response when token is valid
+  });
 
 module.exports = router;

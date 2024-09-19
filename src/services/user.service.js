@@ -9,8 +9,13 @@ const findUserByEmail = async (email) => {
     return await UserSchema.findOne({ where: { email } });
   };
   
+const findUserById = async (id) => {
+    return await UserSchema.findOne({where: {id}})
+}
+
 
 module.exports = {
     creatUser,
-    findUserByEmail
+    findUserByEmail,
+    findUserById
 }
