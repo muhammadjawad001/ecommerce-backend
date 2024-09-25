@@ -29,34 +29,46 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      category: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      userId: {  // New column for associating products with users
+      categoryId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Users', // References 'Users' table
+          model: 'Categories', // Use the table name as it will appear in the database
           key: 'id',
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE', // If a user is deleted, their products are deleted too
+      },
+      location: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      condition: {
+        type: Sequelize.ENUM('new', 'used'),
+        allowNull: false,
+      },
+      userId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'Users', // Use the table name as it will appear in the database
+          key: 'id',
+        },
+      },
+      status: {
+        type: Sequelize.ENUM('available', 'sold_out'),
+        defaultValue: 'available',
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
       },
     });
   },
 
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('Products');
-  }
+  },
 };

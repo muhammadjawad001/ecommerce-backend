@@ -2,12 +2,13 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const bcrypt = require('bcryptjs');
-const Product = require('./product.model'); // Import Product model
+const Product = require('./product.model');
+const Order = require('./order.model'); // Import Product model
 
 const User = sequelize.define('User', {
   id: {
     type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+    defaultValue: DataTypes.UUIDV4, 
     allowNull: false,
     primaryKey: true,
   },
@@ -51,9 +52,6 @@ const User = sequelize.define('User', {
   },
 });
 
-// Add association to Product model
-User.hasMany(Product, { foreignKey: 'userId', onDelete: 'CASCADE' }); // A user can have many products
-Product.belongsTo(User, { foreignKey: 'userId' }); // A product belongs to a user
 
 User.prototype.validPassword = async function (password) {
   return await bcrypt.compare(password, this.password); // Compare plain text with hashed password

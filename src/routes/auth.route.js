@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/auth.controller');
-const {protect} = require('../middleware/authentication')
+const {protect} = require('../middleware/authentication');
+const { UserValidation } = require('../validations');
+// const { signupSchema } = require('../validations/user.validation');
+const validate = require('../middleware/validate'); // Import middleware
 
 
 /**
@@ -35,7 +38,7 @@ const {protect} = require('../middleware/authentication')
  *        500:
  *          description: Error registering user
  */
-router.post('/signup', authController.signup);
+router.post('/signup', validate(UserValidation.signup), authController.signup);
 
 /**
  * @swagger
@@ -86,7 +89,14 @@ router.post('/signup', authController.signup);
  *          description: User not found
  */
 // Login route
-router.post('/login', authController.login);
+router.post('/login', validate(UserValidation.login),authController.login);
+
+//get profile
+router.get('/profile', protect, authController.getUserProfile);
+//update profile
+router.put('/profile/update', protect, validate(UserValidation.profileUpdate), authController.updateUserProfile);
+
+
 
 /**
  * @swagger
@@ -112,13 +122,12 @@ router.post('/login', authController.login);
  *          description: Server error, unable to log out
  */
 
-
 //Logout
 router.post('/logout', authController.logout);
 
 
-router.get('/token-check', protect, (req, res) => {
-    res.status(204).send();  // No content response when token is valid
-  });
+// router.get('/token-check', protect, (req, res) => {
+//     res.status(204).send();  // No content response when token is valid
+//   });
 
 module.exports = router;

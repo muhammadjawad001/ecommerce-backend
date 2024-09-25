@@ -4,13 +4,18 @@ const {ProductService} = require('../services/index');
 // Create Product
 exports.createProduct = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const product = await ProductService.createProduct(req.body, userId);
+  const productData = {
+    ...req.body,
+    imageUrl: req.file ? `/uploads/${req.file.filename}` : null,
+};
+  const product = await ProductService.createProduct(productData, userId);
   res.status(201).json(product);
 });
 
-// Get All Products
+// Get All Products wiith filters
 exports.getProducts = catchAsync(async (req, res) => {
-  const products = await ProductService.getProducts();
+  const filters = req.query;
+  const products = await ProductService.getFilteredProducts(filters);
   res.status(200).json(products);
 });
 
