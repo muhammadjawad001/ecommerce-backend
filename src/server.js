@@ -4,37 +4,39 @@ const dotenv = require('dotenv');
 const { specs, swaggerUi } = require('./docs/swagger');
 const sequelize = require('./config/db');
 const errorHandler = require('./middleware/errors');
+const {adminRoutes, categoryRoutes, productRoutes, authRoutes, orderRoutes} = require('./routes');
+
+
+//config
 dotenv.config();
+//express app
 const app = express();
 
-const authRoutes = require('./routes/auth.route');
-const productRoutes = require('./routes/product.route')
-
-
+//middleware
 app.use(express.json());
 app.use(cors());
 
-// app.use((req, res, next)=> {console.log(req); next();})
-
+app.use(errorHandler); //error handler middleware
+//swagger docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {explorer: true}));
 
-// routes
+// routes 
 app.use('/api/auth', authRoutes);
-app.use('/api', productRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api', productRoutes); 
+app.use('/api', categoryRoutes);
+app.use('/api', orderRoutes);
 
-app.use(errorHandler);
+
 // Connect to the database and start the server
 const startServer = async () => {
     try {
-      // Connect to MySQL
       await sequelize.authenticate();
       console.log('Database connected successfully.');
   
-      // Sync models (this will create the tables if they don't exist)
       await sequelize.sync();
       console.log('Models synchronized with the database.');
   
-      // Start server
       const PORT = process.env.PORT || 5000;
       app.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
@@ -44,5 +46,4 @@ const startServer = async () => {
     }
 };
 
-// Start the server
 startServer();

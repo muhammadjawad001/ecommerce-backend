@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const productController = require('../controllers/product.controller');
-const { protect, authorizeProductAccess } = require('../middleware/authentication');
+const {productController} = require('../controllers/index');
+const upload = require('../middleware/upload');
+const validate = require('../middleware/validate');
+const {protect, authorizeProductAccess} = require('../middleware/authentication')
+const {productValidationSchema} = require('../validations/index');
 
 /**
  * @swagger
@@ -37,7 +40,7 @@ const { protect, authorizeProductAccess } = require('../middleware/authenticatio
  *        500:
  *          description: Error Creating Products
  */
-router.post('/products', protect, productController.createProduct);
+router.post('/products', protect, upload.single('imageUrl'),validate(productValidationSchema), productController.createProduct);
 
 /**
  * @swagger
@@ -60,7 +63,7 @@ router.post('/products', protect, productController.createProduct);
  *        500:
  *          description: Error retrieving products
  */
-router.get('/products', protect, productController.getProducts);
+router.get('/products', productController.getProducts);
 
 /**
  * @swagger
@@ -128,7 +131,7 @@ router.get('/products/:id', protect, authorizeProductAccess, productController.g
  *        500:
  *          description: Error updating the product
  */
-router.put('/products/:id',protect, authorizeProductAccess, productController.updateProduct);
+router.put('/products/:id',protect, authorizeProductAccess, validate(productValidationSchema), productController.updateProduct);
 
 /**
  * @swagger
